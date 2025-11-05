@@ -403,4 +403,4 @@ export default function Dashboard({ user, onLogout }) {
                                 : 'bg-slate-100 text-slate-700'
                             }`}
                           >
-                            {post.status === 'published' ? 'Publié' : post.status === 'scheduled' ? 'programmé : 'Brouillon'}
+                            {post.status === 'published' ? 'Publié' : post.status === 'scheduled' ? 'programmé' : 'Brouillon'}
