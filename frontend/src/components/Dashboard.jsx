@@ -22,9 +22,11 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
 
-const API_BASE_URL = 'http://localhost:5000/api';
+// Assurez-vous que cette URL est correcte pour votre environnement local et Vercel
+// Pour Vercel, vous devrez utiliser une URL absolue ou relative (ex: /api)
+const API_BASE_URL = 'http://localhost:5000/api'; 
 
-export default function Dashboard({ user, onLogout }) {
+export default function Dashboard({ user, onLogout } ) {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [posts, setPosts] = useState([]);
   const [analytics, setAnalytics] = useState(null);
@@ -149,11 +151,11 @@ export default function Dashboard({ user, onLogout }) {
 
   // Charger les données au montage et quand l'onglet change
   useEffect(() => {
-    if (activeTab === 'dashboard' || activeTab === 'posts' || activeTab === 'analytics') {
+    if (user && (activeTab === 'dashboard' || activeTab === 'posts' || activeTab === 'analytics')) {
       fetchPosts();
       fetchAnalytics();
     }
-  }, [activeTab]);
+  }, [activeTab, user]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -404,3 +406,217 @@ export default function Dashboard({ user, onLogout }) {
                             }`}
                           >
                             {post.status === 'published' ? 'Publié' : post.status === 'scheduled' ? 'Programmé' : 'Brouillon'}
+                          </span>
+                          <button
+                            onClick={() => handleEditPost(post)}
+                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                          >
+                            <Edit className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDeletePost(post.id)}
+                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        );
+
+      case 'media':
+        return (
+          <div>
+            <h1 className="text-3xl font-bold text-slate-900 mb-2">Médias</h1>
+            <p className="text-slate-600 mb-8">Gérez vos images et vidéos</p>
+            <Card>
+              <CardHeader>
+                <CardTitle>Galerie de médias</CardTitle>
+                <CardDescription>Fonctionnalité en développement</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-slate-600">Vous pourrez bientôt télécharger et gérer vos médias ici.</p>
+              </CardContent>
+            </Card>
+          </div>
+        );
+
+      case 'analytics':
+        return (
+          <div>
+            <h1 className="text-3xl font-bold text-slate-900 mb-2">Statistiques</h1>
+            <p className="text-slate-600 mb-8">Analysez vos performances</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+              {stats.map((stat, index) => (
+                <Card key={index} className="hover:shadow-lg transition-shadow">
+                  <CardHeader className="flex flex-row items-center justify-between pb-2">
+                    <CardTitle className="text-sm font-medium text-slate-600">
+                      {stat.title}
+                    </CardTitle>
+                    <stat.icon className={`w-5 h-5 ${stat.color}`} />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold text-slate-900">{stat.value}</div>
+                    <p className="text-xs text-green-600 flex items-center mt-1">
+                      <TrendingUp className="w-3 h-3 mr-1" />
+                      {stat.change} ce mois
+                    </p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        );
+
+      case 'settings':
+        return (
+          <div>
+            <h1 className="text-3xl font-bold text-slate-900 mb-2">Paramètres</h1>
+            <p className="text-slate-600 mb-8">Configurez votre compte et vos préférences</p>
+            <Card>
+              <CardHeader>
+                <CardTitle>Paramètres du compte</CardTitle>
+                <CardDescription>Gérez vos informations personnelles</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-900 mb-1">
+                      Adresse email
+                    </label>
+                    <p className="text-slate-600">{user?.email}</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-900 mb-1">
+                      Compte créé
+                    </label>
+                    <p className="text-slate-600">
+                      {user?.created_at ? new Date(user.created_at).toLocaleDateString('fr-FR') : 'N/A'}
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        );
+
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-50 flex">
+      {/* Sidebar */}
+      <aside className="w-64 bg-white border-r border-slate-200 p-6 flex flex-col">
+        <div className="flex items-center gap-2 mb-8">
+          <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+            <Sparkles className="w-6 h-6 text-white" />
+          </div>
+          <span className="text-xl font-bold text-slate-900">Postly</span>
+        </div>
+
+        <nav className="space-y-2 flex-1">
+          <button
+            onClick={() => setActiveTab('dashboard')}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+              activeTab === 'dashboard'
+                ? 'bg-blue-50 text-blue-600'
+                : 'text-slate-600 hover:bg-slate-50'
+            }`}
+          >
+            <LayoutDashboard className="w-5 h-5" />
+            <span>Tableau de bord</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('calendar')}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+              activeTab === 'calendar'
+                ? 'bg-blue-50 text-blue-600'
+                : 'text-slate-600 hover:bg-slate-50'
+            }`}
+          >
+            <Calendar className="w-5 h-5" />
+            <span>Calendrier</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('posts')}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+              activeTab === 'posts'
+                ? 'bg-blue-50 text-blue-600'
+                : 'text-slate-600 hover:bg-slate-50'
+            }`}
+          >
+            <FileText className="w-5 h-5" />
+            <span>Publications</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('media')}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+              activeTab === 'media'
+                ? 'bg-blue-50 text-blue-600'
+                : 'text-slate-600 hover:bg-slate-50'
+            }`}
+          >
+            <Image className="w-5 h-5" />
+            <span>Médias</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('analytics')}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+              activeTab === 'analytics'
+                ? 'bg-blue-50 text-blue-600'
+                : 'text-slate-600 hover:bg-slate-50'
+            }`}
+          >
+            <BarChart3 className="w-5 h-5" />
+            <span>Statistiques</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('settings')}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+              activeTab === 'settings'
+                ? 'bg-blue-50 text-blue-600'
+                : 'text-slate-600 hover:bg-slate-50'
+            }`}
+          >
+            <Settings className="w-5 h-5" />
+            <span>Paramètres</span>
+          </button>
+        </nav>
+
+        <div className="mt-auto pt-6 border-t border-slate-200">
+          <div className="mb-4 text-sm text-slate-600">
+            <p className="font-medium">{user?.email}</p>
+          </div>
+          <Button
+            onClick={handleLogout}
+            variant="outline"
+            className="w-full justify-start"
+          >
+            <LogOut className="w-4 h-4 mr-2" />
+            Déconnexion
+          </Button>
+        </div>
+      </aside>
+
+      {/* Main Content */}
+      <main className="flex-1 p-8">
+        <div className="max-w-7xl mx-auto">
+          {renderContent()}
+        </div>
+      </main>
+    </div>
+  );
+}
+
