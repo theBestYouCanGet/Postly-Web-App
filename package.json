@@ -1,0 +1,9 @@
+{
+  "name": "postly-monorepo",
+  "version": "1.0.0",
+  "description": "Monorepo for Postly web application",
+  "scripts": {
+    "install:all": "npm install --prefix backend && pnpm install --prefix frontend"
+  }
+}
+
