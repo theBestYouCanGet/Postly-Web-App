@@ -24,7 +24,7 @@ import { supabase } from '@/lib/supabaseClient';
 
 // Assurez-vous que cette URL est correcte pour votre environnement local et Vercel
 // Pour Vercel, vous devrez utiliser une URL absolue ou relative (ex: /api)
-const API_BASE_URL = 'http://localhost:5000/api'; 
+const API_BASE_URL = '/api';  
 
 export default function Dashboard({ user, onLogout } ) {
   const [activeTab, setActiveTab] = useState('dashboard');
